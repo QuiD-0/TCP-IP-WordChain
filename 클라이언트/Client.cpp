@@ -16,25 +16,24 @@ void ErrorHandling(char* msg);
 
 char name[NAME_SIZE] = "[DEFAULT]";
 char msg[BUF_SIZE];
-
+char temp[BUF_SIZE];
 int main(int argc, char* argv[]) {
     WSADATA wsaData;
     SOCKET sock;
     SOCKADDR_IN serverAddr;
-    if (argc != 4) {
-        printf("Usage : %s <IP> <port> <name>\n", argv[0]);
-        exit(1);
-    }
+
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)// 윈도우 소켓을 사용한다고 운영체제에 알림
         ErrorHandling("WSAStartup() error!");
+    printf("닉네임 입력:");
+    scanf("%s",temp);
+    sprintf_s(name, "[%s]",temp);
 
-    sprintf_s(name, "[%s]", argv[3]);
-    sock = socket(PF_INET, SOCK_STREAM, 0);//소켓을 하나 생성한다.
+    sock = socket(AF_INET, SOCK_STREAM, 0);//소켓을 하나 생성한다.
 
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr(argv[1]);
-    serverAddr.sin_port = htons(atoi(argv[2]));
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_port = htons(atoi("9000"));
 
     if (connect(sock, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)//서버에 접속한다.
         ErrorHandling("connect() error");

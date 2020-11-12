@@ -6,3 +6,5 @@ C:\Users\ADMIN\Google 드라이브\Univ\3-2\인터넷프로그래밍\Source(신�
 C:\Users\ADMIN\Google 드라이브\Univ\3-2\인터넷프로그래밍\Source(신버전;VC2015~)\Chapter06\ThreadTCPServer실습 - 복사본\Debug\TCPServer.pdb
 C:\Users\ADMIN\Documents\GitHub\Tcp-ip-Chatting\서버\Debug\TCPServer.exe
 C:\Users\ADMIN\Documents\GitHub\Tcp-ip-Chatting\서버\Debug\TCPServer.pdb
+C:\Users\ADMIN\Google 드라이브\Univ\※작성 해야할 리포트\인프\과제\서버\Debug\TCPServer.exe
+C:\Users\ADMIN\Google 드라이브\Univ\※작성 해야할 리포트\인프\과제\서버\Debug\TCPServer.pdb
