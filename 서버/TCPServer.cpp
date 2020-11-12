@@ -24,24 +24,22 @@ int main(int argc, char* argv[]) {
     SOCKADDR_IN serverAddr, clientAddr;
     int clientAddrSize;
     HANDLE hThread;
-    if (argc != 2) {
-        printf("Usage : %s <port>\n", argv[0]);
-        exit(1);
-    }
+
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
         ErrorHandling("WSAStartup() error!");
 
-    serverSock = socket(PF_INET, SOCK_STREAM, 0); //소켓을 생성
+    serverSock = socket(AF_INET, SOCK_STREAM, 0); //소켓을 생성
 
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serverAddr.sin_port = htons(atoi(argv[1]));
+    serverAddr.sin_port = htons(atoi("9000"));
 
     if (bind(serverSock, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) //생성한 소켓을 배치한다.
         ErrorHandling("bind() error");
     if (listen(serverSock, 5) == SOCKET_ERROR)//소켓을 준비상태에 둔다.
         ErrorHandling("listen() error");
+
     InitializeCriticalSection(&cs);
     while (1) {
         clientAddrSize = sizeof(clientAddr);
@@ -51,31 +49,66 @@ int main(int argc, char* argv[]) {
         LeaveCriticalSection(&cs);
         hThread = CreateThread(NULL, 0, ClientRecv, &clientSock, 0, NULL);//Client 쓰레드 실행, clientSock을 매개변수로 전달
         printf("Connected Client IP : %s\n", inet_ntoa(clientAddr.sin_addr));
+        char notice[BUF_SIZE] = { 0 };
+        sprintf(notice, "%d번 사용자입장.\n",clientCount);
+        SendMsg(notice, 100);
     }
     DeleteCriticalSection(&cs);
     closesocket(serverSock);//생성한 소켓을 끈다.
     WSACleanup();//윈도우 소켓을 종료하겠다는 사실을 운영체제에 전달
     return 0;
 }
-int turn = 0;
+
+
+int turn = 0;//클라이언트 순서 제어
+bool start = FALSE;
+char check = 't'; //마지막 단어 체크
+
 DWORD WINAPI ClientRecv(LPVOID arg) {
     SOCKET clientSock = *((SOCKET*)arg); //매개변수로받은 클라이언트 소켓을 전달
     int strLen = 0, i;
     char msg[BUF_SIZE];
-
+    char temp[BUF_SIZE];
+    
     while ((strLen = recv(clientSock, msg, sizeof(msg), 0)) != 0) {
+        SendMsg(msg, strLen);
         //클라이언트 순서대로 채팅 권한을 가짐 
-        if (clientSocks[turn % clientCount] == clientSock && clientCount!=0) {
-            //단어 체크 추가하기
-            if (strLen == 11) {
-                SendMsg(msg, strLen);//SendMsg에 받은 메시지를 전달한다.
+        if (clientSocks[turn % clientCount] == clientSock) {
+            strcpy(temp, msg);
+            char* ptr = strtok(temp, " ");    //첫번째 strtok 사용.
+            ptr = strtok(NULL, "\n");     //자른 문자 다음부터 구분자 또 찾기
+
+            if (!strcmp(ptr, "start") && turn==0) { 
+                start = TRUE; 
+                SendMsg("게임 시작 \n 0번 사용자 제시어 : [t]\n", 100);
             }
-            else {
-                SendMsg("2글자가 아닙니다.\n",100);//SendMsg에 받은 메시지를 전달한다.
+            if (ptr[0] == check &&start) {
+                // 사용 단어 리스트 만들기 
+                //연결리스트?
+
+
+
+
+                EnterCriticalSection(&cs);
+                // 정답 단어 업데이트/// 정답자의 마지막 단어 -> check복사
+                int a = strlen(ptr);
+                char s = ptr[a - 1];
+                check = s;
+                turn++;
+                //다음 사용자, 시작 문자 공지
+                char notice[BUF_SIZE] = { 0 };
+                sprintf(notice, " 정답! \n %d번 사용자 시작단어 [%c]\n", turn % clientCount+1, check);
+                SendMsg(notice, 100);
+                LeaveCriticalSection(&cs);
+            }else if(ptr[0] == check && start && turn !=0){
+                char notice[BUF_SIZE] = { 0 };
+                sprintf(notice, "%d번 사용자가 틀렷습니다. 게임을 종료 합니다.\n", turn % clientCount+1);
+                SendMsg(notice, 100);
+                break;
             }
-            
-            turn++;
+           
         }
+        
     } 
         
     //클라이언트가 나갔을때 
