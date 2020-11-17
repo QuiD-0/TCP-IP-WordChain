@@ -86,25 +86,24 @@ DWORD WINAPI ClientRecv(LPVOID arg) {
                 // 사용 단어 리스트 만들기 
                 //연결리스트?
 
-
-
-
                 EnterCriticalSection(&cs);
                 // 정답 단어 업데이트/// 정답자의 마지막 단어 -> check복사
                 int a = strlen(ptr);
                 char s = ptr[a - 1];
                 check = s;
                 turn++;
+
                 //다음 사용자, 시작 문자 공지
                 char notice[BUF_SIZE] = { 0 };
                 sprintf(notice, " 정답! \n %d번 사용자 시작단어 [%c]\n", turn % clientCount+1, check);
                 SendMsg(notice, 100);
                 LeaveCriticalSection(&cs);
-            }else if(ptr[0] == check && start && turn !=0){
+            }else if(ptr[0] != check && start && turn !=0){
                 char notice[BUF_SIZE] = { 0 };
                 sprintf(notice, "%d번 사용자가 틀렷습니다. 게임을 종료 합니다.\n", turn % clientCount+1);
                 SendMsg(notice, 100);
-                break;
+                start = FALSE;
+                turn = 0;
             }
            
         }
