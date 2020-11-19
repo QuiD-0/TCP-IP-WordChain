@@ -8,3 +8,5 @@ C:\Users\ADMIN\Documents\GitHub\Tcp-ip-Chatting\서버\Debug\TCPServer.exe
 C:\Users\ADMIN\Documents\GitHub\Tcp-ip-Chatting\서버\Debug\TCPServer.pdb
 C:\Users\ADMIN\Google 드라이브\Univ\※작성 해야할 리포트\인프\과제\서버\Debug\TCPServer.exe
 C:\Users\ADMIN\Google 드라이브\Univ\※작성 해야할 리포트\인프\과제\서버\Debug\TCPServer.pdb
+C:\Users\ADMIN\Documents\GitHub\TCP-IP-WordChain\서버\Debug\TCPServer.exe
+C:\Users\ADMIN\Documents\GitHub\TCP-IP-WordChain\서버\Debug\TCPServer.pdb

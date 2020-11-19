@@ -5,20 +5,30 @@
 #include <string.h>
 #include <Windows.h>
 #include <process.h>
-
+#include <malloc.h>
 #define BUF_SIZE 100
 #define MAX_CLNT 256
 
 DWORD WINAPI ClientRecv(LPVOID arg);//쓰레드 함수
 void SendMsg(char* msg, int len);//메시지 보내는 함수
 void ErrorHandling(char* msg);
+bool linkedListFunction(int choice,const char* name);
 
 int clientCount = 0;
 SOCKET clientSocks[MAX_CLNT];//클라이언트 소켓 보관용 배열
 CRITICAL_SECTION cs;
 
+struct nodeType
+{
+    const char* name;
+    nodeType* link;
+};
+nodeType* head = NULL;
+nodeType* newNode;
+nodeType* current;
 
 int main(int argc, char* argv[]) {
+
     WSADATA wsaData;
     SOCKET serverSock, clientSock;
     SOCKADDR_IN serverAddr, clientAddr;
@@ -62,50 +72,81 @@ int main(int argc, char* argv[]) {
 
 int turn = 0;//클라이언트 순서 제어
 bool start = FALSE;
+//랜덤 기능 넣어보기
 char check = 't'; //마지막 단어 체크
 
 DWORD WINAPI ClientRecv(LPVOID arg) {
     SOCKET clientSock = *((SOCKET*)arg); //매개변수로받은 클라이언트 소켓을 전달
     int strLen = 0, i;
     char msg[BUF_SIZE];
-    char temp[BUF_SIZE];
-    
+    char temp[100];
+
     while ((strLen = recv(clientSock, msg, sizeof(msg), 0)) != 0) {
         SendMsg(msg, strLen);
         //클라이언트 순서대로 채팅 권한을 가짐 
-        if (clientSocks[turn % clientCount] == clientSock) {
+        //1번 사용자가 방장. !start커맨드 입력하면 시작
+        if (clientSocks[turn % clientCount] == clientSock ) {
+            EnterCriticalSection(&cs);
             strcpy(temp, msg);
-            char* ptr = strtok(temp, " ");    //첫번째 strtok 사용.
+            const char* ptr= (const char*)malloc(20);
+            ptr = strtok(temp, " ");    //첫번째 strtok 사용.
             ptr = strtok(NULL, "\n");     //자른 문자 다음부터 구분자 또 찾기
-
-            if (!strcmp(ptr, "start") && turn==0) { 
-                start = TRUE; 
-                SendMsg("게임 시작 \n 0번 사용자 제시어 : [t]\n", 100);
-            }
-            if (ptr[0] == check &&start) {
-                // 사용 단어 리스트 만들기 
-                //연결리스트?
-
+            LeaveCriticalSection(&cs);
+            //start 입력 받았을 경우 게임 시작
+            if (!strcmp(ptr, "!start") && turn==0) { 
                 EnterCriticalSection(&cs);
-                // 정답 단어 업데이트/// 정답자의 마지막 단어 -> check복사
-                int a = strlen(ptr);
-                char s = ptr[a - 1];
-                check = s;
-                turn++;
-
-                //다음 사용자, 시작 문자 공지
+                start = TRUE; 
                 char notice[BUF_SIZE] = { 0 };
-                sprintf(notice, " 정답! \n %d번 사용자 시작단어 [%c]\n", turn % clientCount+1, check);
+                sprintf(notice, "게임 시작 \n 1번 사용자 제시어 : [%c]\n", check);
                 SendMsg(notice, 100);
                 LeaveCriticalSection(&cs);
-            }else if(ptr[0] != check && start && turn !=0){
-                char notice[BUF_SIZE] = { 0 };
+            }
+            if (ptr[0] == check &&start) {
+                EnterCriticalSection(&cs);
+                //단어 API 체크
+                //있는 단어일 경우
+                    // 단어가 중복이 아닌경우
+                    if (linkedListFunction(2, (const char*)ptr)) {
+                        linkedListFunction(1, (const char*)ptr);
+                        // 정답 단어 업데이트/// 정답자의 마지막 단어 -> check복사
+                        int a = strlen(ptr);
+                        char s = ptr[a - 1];
+                        check = s;
+                        //다음 사람에게 턴 넘김
+                        turn++;
+                        //다음 사용자, 시작 문자 공지
+                        char notice[100] = { 0 };
+                        sprintf(notice, " 정답! \n %d번 사용자 시작단어 [%c]\n", turn % clientCount+1, check);
+                        SendMsg(notice, 100);
+                    }
+                    // 단어가 이미 사용되었으면
+                    else {
+                        char notice[100] = { 0 };
+                        sprintf(notice, "이미 사용한 단어입니다.\n게임종료\n");
+                        SendMsg(notice, 100); 
+                        //게임 세팅 초기화 
+                        head = NULL;
+                        start = FALSE;
+                        turn = 0;
+                        //임시 -> 랜덤 으로 바꾸기 
+                        check = 'n';
+                    }
+                     
+                 //없는 단어일 경우
+                    LeaveCriticalSection(&cs);
+            }
+            //첫글자가 이전 단어의 마지막과 다를경우
+            else if(ptr[0] != check && start && turn !=0){
+                char notice[100] = { 0 };
                 sprintf(notice, "%d번 사용자가 틀렷습니다. 게임을 종료 합니다.\n", turn % clientCount+1);
                 SendMsg(notice, 100);
+                head = NULL;
                 start = FALSE;
                 turn = 0;
+                //임시 -> 랜덤 으로 바꾸기 
+                check = 's';
             }
-           
+            LeaveCriticalSection(&cs);
         }
         
     } 
@@ -136,4 +177,53 @@ void ErrorHandling(char* msg) {
     fputs(msg, stderr);
     fputc('\n', stderr);
     exit(1);
+}
+
+
+bool linkedListFunction(int choice, const char* in)
+{
+    const char* val = (const char*)malloc(20);
+    if(val)strcpy((char*)val, in);
+    switch (choice)
+    {
+    case 1:
+        EnterCriticalSection(&cs);
+        newNode = (nodeType*)malloc(sizeof(nodeType));
+        if(newNode)newNode->name = val;
+        if(newNode)newNode->link = NULL;
+        if (head == NULL)
+        {
+            head = newNode;
+        }
+        else
+        {
+            if (newNode)newNode->link = head;
+            head = newNode;
+        }
+        LeaveCriticalSection(&cs);
+        break;
+    case 2:
+        EnterCriticalSection(&cs);
+        current = head;
+        while (current != NULL)
+        {   
+            if (strcmp(current->name, val)) {
+                current = current->link;
+            }
+            else break;
+        }
+        if (current == NULL)
+        {
+            return true;
+
+        }
+        else
+        {
+            return false;
+
+        }
+        LeaveCriticalSection(&cs);
+        break;
+    }
+
 }

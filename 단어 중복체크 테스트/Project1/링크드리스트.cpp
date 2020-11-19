@@ -8,74 +8,82 @@ typedef struct nodeType
 	nodeType* link;
 
 };
-nodeType* newNode;
-nodeType* head = NULL;
-nodeType* current;
-nodeType* previousNode;
 
 void main()
 {
 	void linkedListFunction(int choice, const char* name);
 
 	linkedListFunction(1,"hello");
-	linkedListFunction(1, "hello2");
-	linkedListFunction(2, "hellodx");
 	linkedListFunction(4, "hello");
-
+	linkedListFunction(1, "hello2");
+	linkedListFunction(4, "hello");
+	linkedListFunction(1, "hello3");
+	linkedListFunction(4, "hello");
+	linkedListFunction(2, "hello");
 }
-
-void linkedListFunction(int choice,const char* name)
+nodeType* head = NULL;
+nodeType* newNode;
+nodeType* current;
+nodeType* previousNode;
+void linkedListFunction(int choice, const char* val)
 {
-	
-	printf("\n insert=1, search=2");
-	switch (choice)
-	{
-	case 1:
-		printf(" Type insert name : %s",name);
 
-		newNode = (nodeType*)malloc(sizeof(nodeType));
-		newNode->name = name;
-		newNode->link = NULL;
-		if (head == NULL)
-		{
-			head = newNode;
+    switch (choice)
+    {
+    case 1:
+        newNode = (nodeType*)malloc(sizeof(nodeType));
+        if (newNode)newNode->name = val;
+        if (newNode)newNode->link = NULL;
+        if (head == NULL)
+        {
+            head = newNode;
+        }
+        else
+        {
+            newNode->link = head;
+            head = newNode;
+        }
+        break;
+    case 2:
+        current = head;
+        while (current != NULL)
+        {
+            if (strcmp(current->name, val)) {
+                printf("\n search name : %s %p %p\n", current->name, current, current->link);
+                current = current->link;
+            }
+            else break;
+        }
+        if (current == NULL)
+        {
+            printf("\n Have no node \n");
 
-		}
-		else
-		{
-			current = head;
-			while (current != NULL)
-			{
-				previousNode = current;
-				current = current->link;
+        }
+        else
+        {
+            printf("\n search name : %s %p %p\n", current->name, current, current->link);
 
-			};
-			previousNode->link = newNode;
+        }
+        break;
+    case 4:
+        if (head == NULL)
+        {
+            printf("\n Have no node \n");
 
-		}
+        }
+        else
+        {
+            current = head;
+            while (current != NULL)
+            {
+                printf("\n %s %p, %p", current->name, current, current->link);
+                current = current->link;
 
-		break;
-	case 2:
-		printf(" Type search name : %s", name);
+            }
+            printf("\n");
 
-		current = head;
-		while (current != NULL)
-		{
-			if (strcmp(current->name, name))
-				current = current->link;
-			else break;
+        }
+        break;
+    }
 
-		}
-		if (current == NULL)
-		{
-			printf("\n Have no node \n");
-
-		}
-		else
-		{
-			printf("\n search name : %s\n", current->name);
-
-		}
-		break;
-	}
 }
