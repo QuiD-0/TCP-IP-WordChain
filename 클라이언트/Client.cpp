@@ -27,7 +27,8 @@ int main(int argc, char* argv[]) {
     printf("닉네임 입력:");
     scanf("%s",temp);
     sprintf_s(name, "[%s]",temp);
-
+    printf("시작    : !start\n");
+    printf("나가기  : !q \n");
     sock = socket(AF_INET, SOCK_STREAM, 0);//소켓을 하나 생성한다.
 
     memset(&serverAddr, 0, sizeof(serverAddr));
@@ -55,7 +56,7 @@ DWORD WINAPI SendMsg(LPVOID arg) {//전송용 쓰레드함수
     char nameMsg[NAME_SIZE + BUF_SIZE];
     while (1) {//반복
         fgets(msg, BUF_SIZE, stdin);//입력을 받는다.
-        if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n")) {//q를 입력하면 종료한다.
+        if (!strcmp(msg, "!q") || !strcmp(msg, "!Q")) {//q를 입력하면 종료한다.
             closesocket(sock);
             exit(0);
         }
@@ -74,7 +75,8 @@ DWORD WINAPI RecvMsg(LPVOID arg) {
         if (strLen == -1)
             return -1;
         nameMsg[strLen] = 0;//문자열의 끝을 알리기 위해 설정
-        fputs(nameMsg, stdout);//자신의 콘솔에 받은 메시지를 출력한다.
+        printf("%s", nameMsg);//자신의 콘솔에 받은 메시지를 출력한다.
+        printf("\n");
     }
     return 0;
 }

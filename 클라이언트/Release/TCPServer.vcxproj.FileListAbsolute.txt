@@ -1,1 +1,2 @@
 C:\Users\ADMIN\Documents\GitHub\Tcp-ip-Chatting\클라이언트\Release\Client.exe
+C:\Users\ADMIN\Documents\GitHub\TCP-IP-WordChain\클라이언트\Release\Client.exe

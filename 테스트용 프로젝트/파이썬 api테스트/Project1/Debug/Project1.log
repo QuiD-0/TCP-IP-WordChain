@@ -1,0 +1,4 @@
+﻿  소스.c
+C:\Users\ADMIN\Documents\GitHub\TCP-IP-WordChain\파이썬 api테스트\Project1\소스.c(5,11): warning C4013: 'system'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+C:\Users\ADMIN\Documents\GitHub\TCP-IP-WordChain\파이썬 api테스트\Project1\소스.c(8,16): warning C4013: 'strcmp'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+  Project1.vcxproj -> C:\Users\ADMIN\Documents\GitHub\TCP-IP-WordChain\파이썬 api테스트\Debug\Project1.exe
