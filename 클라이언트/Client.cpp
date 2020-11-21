@@ -56,7 +56,7 @@ DWORD WINAPI SendMsg(LPVOID arg) {//전송용 쓰레드함수
     char nameMsg[NAME_SIZE + BUF_SIZE];
     while (1) {//반복
         fgets(msg, BUF_SIZE, stdin);//입력을 받는다.
-        if (!strcmp(msg, "!q") || !strcmp(msg, "!Q")) {//q를 입력하면 종료한다.
+        if (!strcmp(msg, "!q\n") || !strcmp(msg, "!Q\n")) {//q를 입력하면 종료한다.
             closesocket(sock);
             exit(0);
         }

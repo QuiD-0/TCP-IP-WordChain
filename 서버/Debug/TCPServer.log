@@ -1,13 +1,1 @@
-﻿  TCPServer.cpp
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(65,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(93,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(95,19): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(96,19): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(103,17): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(115,25): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(139,29): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(149,25): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(165,17): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(211,12): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\ADMIN\Desktop\서버\TCPServer.cpp(254): warning C4715: 'linkedListFunction': 모든 제어 경로에서 값을 반환하지는 않습니다.
-  TCPServer.vcxproj -> C:\Users\ADMIN\Desktop\서버\Debug\TCPServer.exe
+﻿  TCPServer.vcxproj -> C:\Users\ADMIN\Documents\GitHub\TCP-IP-WordChain\서버\Debug\TCPServer.exe
