@@ -115,11 +115,11 @@ DWORD WINAPI ClientRecv(LPVOID arg) {
                         //google dictinary API 사용 
                         char argv[BUF_SIZE] = { 0 };
                         //exe 바로가기 경로
-                        sprintf(argv, "API.exe.lnk %s", ptr);
+                        sprintf(argv, "API.exe %s", ptr);
                         //파이썬 실행 -> API response를 받아서 파일에 작성 
                         system(argv);
                         // 파일을 통해 값을 읽어옴
-                        fopen_s(&fp, "API/api.txt", "r");
+                        fopen_s(&fp, "api.txt", "r");
                         fgets(buffer, sizeof(buffer), fp);
                         // 단어가 없는 경우 404 리턴
                         if (!strcmp(buffer, "404")) {
