@@ -61,9 +61,6 @@ int main(int argc, char* argv[]) {
         LeaveCriticalSection(&cs);
         hThread = CreateThread(NULL, 0, ClientRecv, &clientSock, 0, NULL);
         printf("Connected Client IP : %s\n", inet_ntoa(clientAddr.sin_addr));
-        char notice[BUF_SIZE] = { 0 };
-        sprintf(notice, "%d번 사용자입장.\n",clientCount);
-        SendMsg(notice, 100);
     }
     DeleteCriticalSection(&cs);
     closesocket(serverSock);
@@ -74,21 +71,40 @@ int main(int argc, char* argv[]) {
 int turn = 0;//클라이언트 순서 제어
 bool start = FALSE;
 char check; //마지막 단어 체크를 위한 변수
+int gameCount = 0;//게임인원
+SOCKET gameSocks[MAX_CLNT];//게임 참가자 소켓
 
 DWORD WINAPI ClientRecv(LPVOID arg) {
     SOCKET clientSock = *((SOCKET*)arg); 
     int strLen = 0, i;
     char msg[BUF_SIZE];
     char temp[100];
+    char checkmsg[100];
     SetRandomCharacter();
     while ((strLen = recv(clientSock, msg, sizeof(msg), 0)) != 0) {
         FILE* fp = NULL;
         char buffer[200];
-
         SendMsg(msg, strLen);
+        strcpy(checkmsg, msg);
+        const char* ptr = (const char*)malloc(20);
+        const char* ptr2 = (const char*)malloc(20);
+        const char* username = (const char*)malloc(20);
+        // 첫 ptr은 이름
+        EnterCriticalSection(&cs);
+        username = strtok(checkmsg, " ");
+        // 두번째 ptr은 단어
+        ptr2 = strtok(NULL, "\n");
+        if (!strcmp(ptr2, "!ready")) {
+            gameSocks[gameCount] = clientSock;
+            gameCount++;
+            char notice[BUF_SIZE] = { 0 };
+            sprintf(notice, "%s 님은 %d번 사용자 입니다.\n", username, gameCount);
+            SendMsg(notice, 100);
+        }
+        LeaveCriticalSection(&cs);
         //클라이언트 순서대로 채팅 권한을 가짐 
         //1번 사용자가 방장. !start커맨드 입력하면 시작
-        if (clientSocks[turn % clientCount] == clientSock ) {
+        if (gameCount > 0 && gameSocks[turn % gameCount] == clientSock ) {
             EnterCriticalSection(&cs);
             strcpy(temp, msg);
             const char* ptr= (const char*)malloc(20);
@@ -128,6 +144,8 @@ DWORD WINAPI ClientRecv(LPVOID arg) {
                             head = NULL;
                             start = FALSE;
                             turn = 0;
+                            SOCKET gameSocks[MAX_CLNT];
+                            gameCount = 0;
                             //랜덤 제시단어 변경
                             SetRandomCharacter();
                         }
@@ -143,7 +161,7 @@ DWORD WINAPI ClientRecv(LPVOID arg) {
                             turn++;
                             //다음 사용자, 시작 문자 공지
                             char notice[100] = { 0 };
-                            sprintf(notice, "-------정답!------- \n [%d]번 사용자 시작단어 [%c]\n", turn % clientCount + 1, check);
+                            sprintf(notice, "-------정답!------- \n [%d]번 사용자 시작단어 [%c]\n", turn % gameCount + 1, check);
                             SendMsg(notice, 100);
                         }
                         fclose(fp);
@@ -159,6 +177,8 @@ DWORD WINAPI ClientRecv(LPVOID arg) {
                         head = NULL;
                         start = FALSE;
                         turn = 0;
+                        SOCKET gameSocks[MAX_CLNT];
+                        gameCount = 0;
                         //랜덤 제시단어 변경
                         SetRandomCharacter();
                     }
@@ -168,12 +188,14 @@ DWORD WINAPI ClientRecv(LPVOID arg) {
             else if(ptr[0] != check && start && turn !=0){
                 EnterCriticalSection(&cs);
                 char notice[100] = { 0 };
-                sprintf(notice, "%d번 사용자가 틀렷습니다. 게임을 종료 합니다.\n", turn % clientCount+1);
+                sprintf(notice, "%d번 사용자가 틀렷습니다. 게임을 종료 합니다.\n", turn % gameCount +1);
                 SendMsg(notice, 100);
                 //게임 초기화
                 head = NULL;
                 start = FALSE;
                 turn = 0;
+                SOCKET gameSocks[MAX_CLNT];
+                gameCount = 0;
                 //제시단어 랜덤 초기화
                 SetRandomCharacter();
                 LeaveCriticalSection(&cs);

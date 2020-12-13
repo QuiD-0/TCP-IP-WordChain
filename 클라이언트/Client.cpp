@@ -27,13 +27,19 @@ int main(int argc, char* argv[]) {
     printf("닉네임 입력:");
     scanf("%s",temp);
     sprintf_s(name, "[%s]",temp);
+    printf("====================\n");
+    printf("준비    : !ready\n");
     printf("시작    : !start\n");
     printf("나가기  : !q \n");
+    printf("====================\n");
+    printf("준비후 시작 해주세요.\n");
+    printf("1번 사용자만 시작이 가능합니다.\n\n");
+
     sock = socket(AF_INET, SOCK_STREAM, 0);//소켓을 하나 생성한다.
 
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_addr.s_addr = inet_addr("175.195.45.228");
     serverAddr.sin_port = htons(atoi("9000"));
 
     if (connect(sock, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)//서버에 접속한다.
