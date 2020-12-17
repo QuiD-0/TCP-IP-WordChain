@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     printf("시작    : !start\n");
     printf("나가기  : !q \n");
     printf("====================\n");
-    printf("준비후 시작 해주세요.\n");
+    printf("준비 후 시작 해주세요.\n");
     printf("1번 사용자만 시작이 가능합니다.\n\n");
 
     sock = socket(AF_INET, SOCK_STREAM, 0);//소켓을 하나 생성한다.

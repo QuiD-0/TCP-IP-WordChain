@@ -1,0 +1,2 @@
+C:\Users\ADMIN\Documents\GitHub\Tcp-ip-Chatting\서버\Release\TCPServer.exe
+C:\Users\ADMIN\Documents\GitHub\TCP-IP-WordChain\서버\Release\TCPServer.exe

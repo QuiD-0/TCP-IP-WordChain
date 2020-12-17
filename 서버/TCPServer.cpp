@@ -93,13 +93,25 @@ DWORD WINAPI ClientRecv(LPVOID arg) {
         EnterCriticalSection(&cs);
         username = strtok(checkmsg, " ");
         // 두번째 ptr은 단어
+        bool readyFlag = false;
         ptr2 = strtok(NULL, "\n");
-        if (!strcmp(ptr2, "!ready")) {
-            gameSocks[gameCount] = clientSock;
-            gameCount++;
-            char notice[BUF_SIZE] = { 0 };
-            sprintf(notice, "%s 님은 %d번 사용자 입니다.\n", username, gameCount);
-            SendMsg(notice, 100);
+        if (ptr2!=NULL && !strcmp(ptr2, "!ready")) {
+            readyFlag = false;
+            for (int i = 0; i < gameCount; i++) {
+                if (gameSocks[i] == clientSock) {
+                    char notice[BUF_SIZE] = { 0 };
+                    sprintf(notice, "이미 준비가 되었습니다.\n");
+                    SendMsg(notice, 100);
+                    readyFlag = true;
+                }
+            }
+            if (!readyFlag) {
+                gameSocks[gameCount] = clientSock;
+                gameCount++;
+                char notice[BUF_SIZE] = { 0 };
+                sprintf(notice, "%s 님은 %d번 사용자 입니다.\n", username, gameCount);
+                SendMsg(notice, 100);
+            }  
         }
         LeaveCriticalSection(&cs);
         //클라이언트 순서대로 채팅 권한을 가짐 
